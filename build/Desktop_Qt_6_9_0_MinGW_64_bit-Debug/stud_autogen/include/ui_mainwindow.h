@@ -1,0 +1,249 @@
+/********************************************************************************
+** Form generated from reading UI file 'mainwindow.ui'
+**
+** Created by: Qt User Interface Compiler version 6.9.0
+**
+** WARNING! All changes made in this file will be lost when recompiling UI file!
+********************************************************************************/
+
+#ifndef UI_MAINWINDOW_H
+#define UI_MAINWINDOW_H
+
+#include <QtCore/QVariant>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QDoubleSpinBox>
+#include <QtWidgets/QGroupBox>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QHeaderView>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QMenuBar>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QSpinBox>
+#include <QtWidgets/QStatusBar>
+#include <QtWidgets/QTableView>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QWidget>
+
+QT_BEGIN_NAMESPACE
+
+class Ui_MainWindow
+{
+public:
+    QWidget *centralwidget;
+    QTableView *tableView;
+    QGroupBox *groupBoxStudentInfo;
+    QWidget *widget;
+    QVBoxLayout *verticalLayout;
+    QHBoxLayout *horizontalLayout_2;
+    QLabel *labelName;
+    QLineEdit *lineEditName;
+    QHBoxLayout *horizontalLayout_3;
+    QLabel *labelAge;
+    QSpinBox *spinBoxAge;
+    QHBoxLayout *horizontalLayout_4;
+    QLabel *labelGender;
+    QComboBox *comboBoxGender;
+    QHBoxLayout *horizontalLayout_5;
+    QLabel *label;
+    QLineEdit *lineEditStudentID;
+    QHBoxLayout *horizontalLayout_6;
+    QLabel *label_2;
+    QLineEdit *lineEditMajor;
+    QHBoxLayout *horizontalLayout_7;
+    QLabel *label_3;
+    QLineEdit *lineEditGrade;
+    QHBoxLayout *horizontalLayout_8;
+    QLabel *label_4;
+    QDoubleSpinBox *doubleSpinBoxScore;
+    QPushButton *pushButtonAddStudent;
+    QWidget *layoutWidget;
+    QHBoxLayout *horizontalLayout;
+    QPushButton *pushButtonDeleteStudent;
+    QMenuBar *menubar;
+    QStatusBar *statusbar;
+
+    void setupUi(QMainWindow *MainWindow)
+    {
+        if (MainWindow->objectName().isEmpty())
+            MainWindow->setObjectName("MainWindow");
+        MainWindow->resize(800, 600);
+        centralwidget = new QWidget(MainWindow);
+        centralwidget->setObjectName("centralwidget");
+        tableView = new QTableView(centralwidget);
+        tableView->setObjectName("tableView");
+        tableView->setGeometry(QRect(50, 0, 731, 251));
+        tableView->setMinimumSize(QSize(730, 0));
+        groupBoxStudentInfo = new QGroupBox(centralwidget);
+        groupBoxStudentInfo->setObjectName("groupBoxStudentInfo");
+        groupBoxStudentInfo->setGeometry(QRect(60, 280, 261, 251));
+        widget = new QWidget(groupBoxStudentInfo);
+        widget->setObjectName("widget");
+        widget->setGeometry(QRect(10, 20, 140, 173));
+        verticalLayout = new QVBoxLayout(widget);
+        verticalLayout->setObjectName("verticalLayout");
+        verticalLayout->setContentsMargins(0, 0, 0, 0);
+        horizontalLayout_2 = new QHBoxLayout();
+        horizontalLayout_2->setObjectName("horizontalLayout_2");
+        labelName = new QLabel(widget);
+        labelName->setObjectName("labelName");
+        labelName->setAlignment(Qt::AlignmentFlag::AlignCenter);
+
+        horizontalLayout_2->addWidget(labelName);
+
+        lineEditName = new QLineEdit(widget);
+        lineEditName->setObjectName("lineEditName");
+
+        horizontalLayout_2->addWidget(lineEditName);
+
+
+        verticalLayout->addLayout(horizontalLayout_2);
+
+        horizontalLayout_3 = new QHBoxLayout();
+        horizontalLayout_3->setObjectName("horizontalLayout_3");
+        labelAge = new QLabel(widget);
+        labelAge->setObjectName("labelAge");
+        labelAge->setAlignment(Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter);
+
+        horizontalLayout_3->addWidget(labelAge);
+
+        spinBoxAge = new QSpinBox(widget);
+        spinBoxAge->setObjectName("spinBoxAge");
+
+        horizontalLayout_3->addWidget(spinBoxAge);
+
+
+        verticalLayout->addLayout(horizontalLayout_3);
+
+        horizontalLayout_4 = new QHBoxLayout();
+        horizontalLayout_4->setObjectName("horizontalLayout_4");
+        labelGender = new QLabel(widget);
+        labelGender->setObjectName("labelGender");
+
+        horizontalLayout_4->addWidget(labelGender);
+
+        comboBoxGender = new QComboBox(widget);
+        comboBoxGender->addItem(QString());
+        comboBoxGender->addItem(QString());
+        comboBoxGender->setObjectName("comboBoxGender");
+
+        horizontalLayout_4->addWidget(comboBoxGender);
+
+
+        verticalLayout->addLayout(horizontalLayout_4);
+
+        horizontalLayout_5 = new QHBoxLayout();
+        horizontalLayout_5->setObjectName("horizontalLayout_5");
+        label = new QLabel(widget);
+        label->setObjectName("label");
+
+        horizontalLayout_5->addWidget(label);
+
+        lineEditStudentID = new QLineEdit(widget);
+        lineEditStudentID->setObjectName("lineEditStudentID");
+
+        horizontalLayout_5->addWidget(lineEditStudentID);
+
+
+        verticalLayout->addLayout(horizontalLayout_5);
+
+        horizontalLayout_6 = new QHBoxLayout();
+        horizontalLayout_6->setObjectName("horizontalLayout_6");
+        label_2 = new QLabel(widget);
+        label_2->setObjectName("label_2");
+
+        horizontalLayout_6->addWidget(label_2);
+
+        lineEditMajor = new QLineEdit(widget);
+        lineEditMajor->setObjectName("lineEditMajor");
+
+        horizontalLayout_6->addWidget(lineEditMajor);
+
+
+        verticalLayout->addLayout(horizontalLayout_6);
+
+        horizontalLayout_7 = new QHBoxLayout();
+        horizontalLayout_7->setObjectName("horizontalLayout_7");
+        label_3 = new QLabel(widget);
+        label_3->setObjectName("label_3");
+
+        horizontalLayout_7->addWidget(label_3);
+
+        lineEditGrade = new QLineEdit(widget);
+        lineEditGrade->setObjectName("lineEditGrade");
+
+        horizontalLayout_7->addWidget(lineEditGrade);
+
+
+        verticalLayout->addLayout(horizontalLayout_7);
+
+        horizontalLayout_8 = new QHBoxLayout();
+        horizontalLayout_8->setObjectName("horizontalLayout_8");
+        label_4 = new QLabel(widget);
+        label_4->setObjectName("label_4");
+
+        horizontalLayout_8->addWidget(label_4);
+
+        doubleSpinBoxScore = new QDoubleSpinBox(widget);
+        doubleSpinBoxScore->setObjectName("doubleSpinBoxScore");
+
+        horizontalLayout_8->addWidget(doubleSpinBoxScore);
+
+
+        verticalLayout->addLayout(horizontalLayout_8);
+
+        pushButtonAddStudent = new QPushButton(centralwidget);
+        pushButtonAddStudent->setObjectName("pushButtonAddStudent");
+        pushButtonAddStudent->setGeometry(QRect(380, 300, 56, 18));
+        layoutWidget = new QWidget(centralwidget);
+        layoutWidget->setObjectName("layoutWidget");
+        layoutWidget->setGeometry(QRect(0, 0, 2, 2));
+        horizontalLayout = new QHBoxLayout(layoutWidget);
+        horizontalLayout->setObjectName("horizontalLayout");
+        horizontalLayout->setContentsMargins(0, 0, 0, 0);
+        pushButtonDeleteStudent = new QPushButton(centralwidget);
+        pushButtonDeleteStudent->setObjectName("pushButtonDeleteStudent");
+        pushButtonDeleteStudent->setGeometry(QRect(380, 330, 56, 18));
+        MainWindow->setCentralWidget(centralwidget);
+        menubar = new QMenuBar(MainWindow);
+        menubar->setObjectName("menubar");
+        menubar->setGeometry(QRect(0, 0, 800, 18));
+        MainWindow->setMenuBar(menubar);
+        statusbar = new QStatusBar(MainWindow);
+        statusbar->setObjectName("statusbar");
+        MainWindow->setStatusBar(statusbar);
+
+        retranslateUi(MainWindow);
+
+        QMetaObject::connectSlotsByName(MainWindow);
+    } // setupUi
+
+    void retranslateUi(QMainWindow *MainWindow)
+    {
+        MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "MainWindow", nullptr));
+        groupBoxStudentInfo->setTitle(QCoreApplication::translate("MainWindow", "\345\255\246\347\224\237\344\277\241\346\201\257", nullptr));
+        labelName->setText(QCoreApplication::translate("MainWindow", "\345\247\223\345\220\215", nullptr));
+        labelAge->setText(QCoreApplication::translate("MainWindow", "\345\271\264\351\276\204", nullptr));
+        labelGender->setText(QCoreApplication::translate("MainWindow", "\346\200\247\345\210\253", nullptr));
+        comboBoxGender->setItemText(0, QCoreApplication::translate("MainWindow", "\347\224\267", nullptr));
+        comboBoxGender->setItemText(1, QCoreApplication::translate("MainWindow", "\345\245\263", nullptr));
+
+        label->setText(QCoreApplication::translate("MainWindow", "\345\255\246\345\217\267", nullptr));
+        label_2->setText(QCoreApplication::translate("MainWindow", "\344\270\223\344\270\232", nullptr));
+        label_3->setText(QCoreApplication::translate("MainWindow", "\345\271\264\347\272\247", nullptr));
+        label_4->setText(QCoreApplication::translate("MainWindow", "\346\210\220\347\273\251", nullptr));
+        pushButtonAddStudent->setText(QCoreApplication::translate("MainWindow", "\346\267\273\345\212\240\345\255\246\347\224\237", nullptr));
+        pushButtonDeleteStudent->setText(QCoreApplication::translate("MainWindow", "\345\210\240\351\231\244\345\255\246\347\224\237", nullptr));
+    } // retranslateUi
+
+};
+
+namespace Ui {
+    class MainWindow: public Ui_MainWindow {};
+} // namespace Ui
+
+QT_END_NAMESPACE
+
+#endif // UI_MAINWINDOW_H
