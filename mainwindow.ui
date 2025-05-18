@@ -17,8 +17,8 @@
    <widget class="QTableView" name="tableView">
     <property name="geometry">
      <rect>
-      <x>50</x>
-      <y>0</y>
+      <x>0</x>
+      <y>20</y>
       <width>731</width>
       <height>251</height>
      </rect>
@@ -35,14 +35,14 @@
      <rect>
       <x>60</x>
       <y>280</y>
-      <width>261</width>
-      <height>251</height>
+      <width>171</width>
+      <height>221</height>
      </rect>
     </property>
     <property name="title">
      <string>学生信息</string>
     </property>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -170,19 +170,6 @@
      </layout>
     </widget>
    </widget>
-   <widget class="QPushButton" name="pushButtonAddStudent">
-    <property name="geometry">
-     <rect>
-      <x>380</x>
-      <y>300</y>
-      <width>56</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>添加学生</string>
-    </property>
-   </widget>
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
@@ -194,18 +181,59 @@
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout"/>
    </widget>
-   <widget class="QPushButton" name="pushButtonDeleteStudent">
+   <widget class="QWidget" name="">
     <property name="geometry">
      <rect>
-      <x>380</x>
-      <y>330</y>
-      <width>56</width>
-      <height>18</height>
+      <x>300</x>
+      <y>320</y>
+      <width>58</width>
+      <height>130</height>
      </rect>
     </property>
-    <property name="text">
-     <string>删除学生</string>
-    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QPushButton" name="pushButtonAddStudent">
+       <property name="text">
+        <string>添加学生</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonDeleteStudent">
+       <property name="text">
+        <string>删除学生</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonModifyStudent">
+       <property name="text">
+        <string>修改学生</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonQueryStudent">
+       <property name="text">
+        <string>查询学生</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonSaveToFile">
+       <property name="text">
+        <string>保存到文件</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonLoadFromFile">
+       <property name="text">
+        <string>从文件加载</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
