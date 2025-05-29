@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>StartMenu</class>
+ <widget class="QWidget" name="StartMenu">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QtWuziqi</string>
+  </property>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>90</x>
+     <y>40</y>
+     <width>258</width>
+     <height>282</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QPushButton" name="pvpBtn">
+      <property name="text">
+       <string>双人对战</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pveBtn">
+      <property name="text">
+       <string>人机对战</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="historyBtn">
+      <property name="text">
+       <string>历史记录</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QListWidget" name="historyList"/>
+    </item>
+    <item>
+     <widget class="QPushButton" name="clearBtn">
+      <property name="text">
+       <string>清除记录</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
