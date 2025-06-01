@@ -49,21 +49,7 @@ void StartMenu::loadHistory() {
 
     QTextStream in(&file);
 
-    int singleWin = 0, singleLose = 0;
-    int multiWin = 0, multiLose = 0;
 
-    while(!in.atEnd()) {
-        QString line = in.readLine();
-        if(line.startsWith("[单人]")) {
-            if(line.contains("胜利")) singleWin++;
-            else singleLose++;
-        }
-        else if(line.startsWith("[双人]")) {
-            if(line.contains("胜利")) multiWin++;
-            else multiLose++;
-        }
-        historyList->addItem(line);
-    }
 
     file.close();
 }
