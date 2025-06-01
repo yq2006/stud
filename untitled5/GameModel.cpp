@@ -338,5 +338,168 @@ void GameModel::calculateScore()
     }
 }
 
+bool GameModel::isWin(int row, int col)
+{
+    // 获取当前棋子颜色（1=白，-1=黑）
+    int current = gameMapVec[row][col];
+    if (current == 0) return false;//空白位置返回false
+
+    // 四个检测方向：水平、垂直、左斜、右斜
+    int directions[4][2] = {{0,1}, {1,0}, {1,1}, {1,-1}};
+
+    for (auto &dir : directions) {
+        int dy = dir[0], dx = dir[1];
+        int count = 1;
+
+        // 向正方向检测
+        for (int k = 1; k < 5; ++k) {
+            int y = row + dy*k;
+            int x = col + dx*k;
+            if (y < 0 || y >= kBoardSizeNum || x < 0 || x >= kBoardSizeNum)break;//越界则终止检测
+            if (gameMapVec[y][x] != current) break;//颜色不同则终止检测
+            count++;
+        }
+
+        // 向反方向检测
+        for (int k = 1; k < 5; ++k) {
+            int y = row - dy*k;
+            int x = col - dx*k;
+            if (y < 0 || y >= kBoardSizeNum || x < 0 || x >= kBoardSizeNum)break;//越界则终止检测
+            if (gameMapVec[y][x] != current) break;//颜色不同则终止检测
+            count++;
+        }
+
+        if (count >= 5) return true;
+    }
+    return false;
+}
+
+//死局判断（棋盘已满而无人获胜）
+bool GameModel::isDeadGame()
+{
+    // 所有空格全部填满
+    for (int i = 1; i < kBoardSizeNum; i++)
+        for (int j = 1; j < kBoardSizeNum; j++)
+        {   //若存在空白格（0），则游戏未结束
+            if (!(gameMapVec[i][j] == 1 || gameMapVec[i][j] == -1))
+                return false;
+        }
+    return true;
+}
+
+//悔棋
+void GameModel::undo()
+{
+    if (moveHistory.empty()) return;//无历史记录则退出
+
+    auto lastMove = moveHistory.back();// 获取最后一步落子位置
+    moveHistory.pop_back();//移除该记录
+
+    gameMapVec[lastMove.first][lastMove.second] = 0;// 重置棋盘，使该位置为空（0）
+
+    playerFlag = !playerFlag;// 切换玩家标志（回退到上一步的玩家回合）
+}
+
+//棋局评估
+int GameModel::evaluateBoard() const
+{
+    int totalWhite = 0, totalBlack = 0;// 遍历所有格子，累加每个点对白/黑的棋型评分
+
+    for (int row = 0; row < kBoardSizeNum; ++row) {
+        for (int col = 0; col < kBoardSizeNum; ++col) {
+            int whiteScore = 0, blackScore = 0;// 对空格或已落子格，都做方向评分
+
+            for (int dy = -1; dy <= 1; ++dy) {
+                for (int dx = -1; dx <= 1; ++dx) {
+                    if (dy==0 && dx==0) continue;
+                    // —— 白棋方向评分 ——
+                    int pCount=0, pBlocks=0;//连续白子数，阻挡数
+                    bool pE1=false, pE2=false;//两端是否为空
+                    for (int k=1; k<=4; ++k) {
+                        int y=row+dy*k, x=col+dx*k;
+                        if (y<0||y>=kBoardSizeNum||x<0||x>=kBoardSizeNum) { ++pBlocks; break; }
+                        if (gameMapVec[y][x]==1) ++pCount;
+                        else if (gameMapVec[y][x]==-1) { ++pBlocks; break; }
+                        else { if (k==1) pE1=true; break; }
+                    }
+                    for (int k=1; k<=4; ++k) {
+                        int y=row-dy*k, x=col-dx*k;
+                        if (y<0||y>=kBoardSizeNum||x<0||x>=kBoardSizeNum) { ++pBlocks; break; }
+                        if (gameMapVec[y][x]==1) ++pCount;
+                        else if (gameMapVec[y][x]==-1) { ++pBlocks; break; }
+                        else { if (k==1) pE2=true; break; }
+                    }
+                    // 累加白棋分
+                    if      (pCount>=4) whiteScore += (pBlocks==0?FIVE:(pBlocks==1?BLOCK_FOUR*2:0));
+                    else if (pCount==3) whiteScore += (pBlocks==0?(pE1&&pE2?LIVE_FOUR:BLOCK_FOUR):(BLOCK_FOUR/2));
+                    else if (pCount==2) whiteScore += (pBlocks==0?(pE1&&pE2?DUAL_LIVE_THREE:(pE1||pE2?LIVE_THREE:0)):DEAD_THREE);
+                    else if (pCount==1) if (pBlocks==0&&(pE1||pE2)) whiteScore += LIVE_TWO;
+
+                    // —— 黑棋方向评分 ——
+                    int bCount=0, bBlocks=0; bool bE1=false, bE2=false;
+                    for (int k=1; k<=4; ++k) {
+                        int y=row+dy*k, x=col+dx*k;
+                        if (y<0||y>=kBoardSizeNum||x<0||x>=kBoardSizeNum) { ++bBlocks; break; }
+                        if (gameMapVec[y][x]==-1) ++bCount;
+                        else if (gameMapVec[y][x]==1) { ++bBlocks; break; }
+                        else { if (k==1) bE1=true; break; }
+                    }
+                    for (int k=1; k<=4; ++k) {
+                        int y=row-dy*k, x=col-dx*k;
+                        if (y<0||y>=kBoardSizeNum||x<0||x>=kBoardSizeNum) { ++bBlocks; break; }
+                        if (gameMapVec[y][x]==-1) ++bCount;
+                        else if (gameMapVec[y][x]==1) { ++bBlocks; break; }
+                        else { if (k==1) bE2=true; break; }
+                    }
+                    // 累加黑棋分
+                    if      (bCount>=4) blackScore += (bBlocks==0?FIVE:(bBlocks==1?BLOCK_FOUR*2:0));
+                    else if (bCount==3) blackScore += (bBlocks==0?(bE1&&bE2?LIVE_FOUR:BLOCK_FOUR):(BLOCK_FOUR/2));
+                    else if (bCount==2) blackScore += (bBlocks==0?(bE1&&bE2?DUAL_LIVE_THREE:(bE1||bE2?LIVE_THREE:0)):DEAD_THREE);
+                    else if (bCount==1) if (bBlocks==0&&(bE1||bE2)) blackScore += LIVE_TWO;
+                }
+            }
+
+            // 如果该格已经有子，再给一个成五的权重
+            if (gameMapVec[row][col]==1)  whiteScore += FIVE;
+            if (gameMapVec[row][col]==-1) blackScore += FIVE;
+
+            totalWhite += whiteScore;
+            totalBlack += blackScore;
+        }
+    }
+    return   totalBlack - totalWhite; //返回黑白之差，数值越高，黑棋越占优势
+}
+
+//AI决策
+pair<int, int> GameModel::searchBestMove(int depth)
+{
+    int bestScore = numeric_limits<int>::min();//初始化为最小整数
+    pair<int,int> bestMove{-1,-1};
+
+    // 候选落点：这里简单遍历所有空格
+    for (int r=0; r<kBoardSizeNum; ++r) {
+        for (int c=0; c<kBoardSizeNum; ++c) {
+            if (gameMapVec[r][c]!=0) continue;//跳过非空格
+
+            //模拟落子
+            gameMapVec[r][c] = -1;           // AI 下黑子（-1）
+            int score = evaluateBoard();
+            gameMapVec[r][c] = 0;//恢复空白
+
+            //更新最佳落子
+            if (score > bestScore) {
+                bestScore = score;
+                bestMove = {r,c};
+            }
+        }
+    }
+    //如果没找到，随便返回
+    if (bestMove.first<0) {
+        int i=rand()%kBoardSizeNum, j=rand()%kBoardSizeNum;
+        bestMove = {i,j};
+    }
+    return bestMove;
+}
+
 
 
