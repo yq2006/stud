@@ -25,7 +25,6 @@ StartMenu::StartMenu(QWidget *parent) : QWidget(parent)
     connect(pveBtn, &QPushButton::clicked, this, &StartMenu::startPVE);
     connect(historyBtn, &QPushButton::clicked, this, &StartMenu::loadHistory);
 
-
     loadHistory();
 }
 
@@ -46,7 +45,6 @@ void StartMenu::loadHistory() {
     QFile file("history.log");
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
-
     QTextStream in(&file);
 
     int singleWin = 0, singleLose = 0;
