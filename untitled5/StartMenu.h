@@ -15,6 +15,7 @@ public:
     StartMenu(QWidget *parent = nullptr);
 
     void closeEvent(QCloseEvent *event);
+
 signals:
     void startPVP();
     void startPVE();
@@ -26,10 +27,7 @@ private slots:
 private:
     void loadHistory();
     QPushButton *clearBtn;
-
     QListWidget *historyList;
-
-
 };
 
 #endif
