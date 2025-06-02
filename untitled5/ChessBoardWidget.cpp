@@ -106,3 +106,28 @@ void ChessBoardWidget::mouseReleaseEvent(QMouseEvent *event)
     if (clickPosRow >= 0 && clickPosCol >= 0 && game.gameMapVec[clickPosRow][clickPosCol] == 0)//确保该位置有效且为空
         emit playerMoved(clickPosRow, clickPosCol);//发出玩家落子信号
 }
+
+//更新点击位置（将窗口坐标转换为棋盘行列）
+void ChessBoardWidget::updateClickPosition(int x, int y)
+{
+    clickPosRow = clickPosCol = -1;//重置点击位置（设置为无效）
+
+    //转化换棋盘内的相对坐标
+    int gx = x - kBoardMargin;
+    int gy = y - kBoardMargin;
+
+    // 边界检查
+    if (gx < 0 || gy < 0 ||
+        gx >= kBlockSize*kBoardSizeNum ||
+        gy >= kBlockSize*kBoardSizeNum)
+        return;//超出边界则直接返回
+
+    int col = (gx * 2 + kBlockSize) / (kBlockSize * 2);// 计算列坐标（四舍五入）
+    int row = (gy * 2 + kBlockSize) / (kBlockSize * 2);// 计算行坐标（四舍五入）
+
+    // 确保坐标在合法范围内
+    if (row >= 0 && row < kBoardSizeNum && col >= 0 && col < kBoardSizeNum) {
+        clickPosRow = row;//更新行坐标
+        clickPosCol = col;//更新列坐标
+    }
+}
