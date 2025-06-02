@@ -88,3 +88,21 @@ void ChessBoardWidget::paintEvent(QPaintEvent *)
         }
     }
 }
+
+//鼠标移动事件
+void ChessBoardWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    updateClickPosition(event->pos().x(), event->pos().y());//更新点击位置（根据鼠标坐标）
+    if (clickPosRow >= 0 && clickPosCol >= 0)//确保当前位置有效
+        emit hovered(clickPosRow, clickPosCol);//发出悬停信号
+
+    update();//重绘（更新预览标记）
+}
+
+//鼠标释放事件（落子）
+void ChessBoardWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+    updateClickPosition(event->pos().x(), event->pos().y());//更新点击位置
+    if (clickPosRow >= 0 && clickPosCol >= 0 && game.gameMapVec[clickPosRow][clickPosCol] == 0)//确保该位置有效且为空
+        emit playerMoved(clickPosRow, clickPosCol);//发出玩家落子信号
+}
