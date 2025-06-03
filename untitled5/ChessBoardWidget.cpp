@@ -15,7 +15,7 @@ ChessBoardWidget::ChessBoardWidget(QWidget *parent)
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);//设置固定尺寸
 }
 
-//部件的尺寸
+//部件的尺寸   推荐大小
 QSize ChessBoardWidget::sizeHint() const
 {
     int dim = kBoardMargin * 2 + kBlockSize * kBoardSizeNum;//棋盘的边长
