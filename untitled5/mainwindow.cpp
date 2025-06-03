@@ -377,3 +377,144 @@ void MainWindow::checkGameEnd(int row, int col)
              << " 最短步数记录:" << shortestWin;
 }
 
+// 创建菜单系统
+void MainWindow::createMenus()
+{
+    // 创建"模式"菜单
+    QMenu *gameMenu = menuBar()->addMenu(tr("模式"));
+    QAction *pvp = gameMenu->addAction(tr("PVP"));// 双人对战
+    QAction *pve = gameMenu->addAction(tr("PVE"));// 人机对战
+    connect(pvp, &QAction::triggered, this, &MainWindow::initPVPGame);
+    connect(pve, &QAction::triggered, this, &MainWindow::initPVEGame);
+
+    // 创建"记录"菜单
+    QMenu *recMenu = menuBar()->addMenu(tr("记录"));
+    QAction *hist = recMenu->addAction(tr("历史记录"));
+    QAction *save = recMenu->addAction(tr("保存游戏"));
+    QAction *load = recMenu->addAction(tr("加载游戏"));
+    connect(hist, &QAction::triggered, this, &MainWindow::showHistory);
+    connect(save, &QAction::triggered, this, &MainWindow::saveGame);
+    connect(load, &QAction::triggered, this, &MainWindow::loadGame);
+
+    // 创建“悔棋”菜单
+    QMenu *ctrlMenu = menuBar()->addMenu(tr("悔棋"));
+    undoAction = ctrlMenu->addAction(tr("悔棋 (剩余次数: %1)").arg(remainingUndos));
+    connect(undoAction, &QAction::triggered, this, &MainWindow::onUndo);
+
+    QAction *setUndosAction = ctrlMenu->addAction(tr("设置悔棋次数"));
+    connect(setUndosAction, &QAction::triggered, this, &MainWindow::setMaxUndos);
+}
+
+// 创建统计面板界面组件
+void MainWindow::createStatsPanel()
+{
+    // 初始化各种统计标签并设置默认值
+    undosLabel = new QLabel("3");              // 悔棋次数标签，默认值3
+    winsLabel = new QLabel("0");               // 胜场统计标签，默认值0
+    lossesLabel = new QLabel("0");             // 败场统计标签，默认值0
+    drawsLabel = new QLabel("0");              // 平局统计标签，默认值0
+    shortestWinLabel = new QLabel("—");        // 最短获胜步数标签，默认值"-"
+    currentStepsLabel = new QLabel("0 步");    // 当前步数标签，显示如"0步"
+    hoverPosLabel = new QLabel("(—, —)");      // 鼠标悬停位置标签，默认"(-，-)"
+    lastMoveLabel = new QLabel("(—, —)");      // 最后落子位置标签，默认"(-，-)"
+    myScoreLabel = new QLabel("0.0");
+    opponentScoreLabel = new QLabel("0.0");
+    evalLabel = new QLabel("—");               // 局势评估标签，默认值"一"(无评估)
+
+
+    // 将标签添加到网格布局中，左侧为描述文字，右侧为数值标签
+    statsLayout->addRow("剩余悔棋:", undosLabel);
+    statsLayout->addRow("胜场:", winsLabel);
+    statsLayout->addRow("负场:", lossesLabel);
+    statsLayout->addRow("平局:", drawsLabel);
+    statsLayout->addRow("最短胜步数:", shortestWinLabel);
+    statsLayout->addRow("当前走了:", currentStepsLabel);
+    statsLayout->addRow("鼠标行列:", hoverPosLabel);
+    statsLayout->addRow("最后走:", lastMoveLabel);
+    statsLayout->addRow("局势评估:", evalLabel);
+}
+
+//更新统计面板的所有数据
+void MainWindow::updateStats()
+{
+    GameModel *g = &boardWidget->gameModel();// 获取游戏模型引用
+    g->calculateScore(); // // 重新计算棋盘所有位置的评分
+
+    winsLabel->        setText(QString::number(wins));
+    lossesLabel->      setText(QString::number(losses));
+    drawsLabel->       setText(QString::number(draws));
+
+    // 更新最短获胜步数标签
+    shortestWinLabel-> setText(
+        shortestWin<INT_MAX? QString::number(shortestWin) : QString("!")
+        );
+    currentStepsLabel->setText(
+        QString("%1 步!").arg(g->moveHistory.size())
+        );
+
+    // 更新最后移动位置标签：
+    if (!g->moveHistory.empty())
+    {
+        auto mv = g->moveHistory.back();// 获取最后一步记录
+        QString who;// 确定最后落子方身份
+        if (g->gameType == BOT)// 人机对战模式
+        {
+            who = (g->gameMapVec[mv.first][mv.second] == 1) ? "您" : "电脑";
+        }
+        else// 双人对战模式
+        {
+            who = (g->gameMapVec[mv.first][mv.second] == -1) ? "黑方" : "白方";
+        }
+        lastMoveLabel->setText(QString("%1 在 (%2, %3)").arg(who).arg(mv.first).arg(mv.second));
+    }
+
+    // 计算己方和对手的最佳分数
+    int maxMine = 0, maxOpp = 0;
+    g->calculateScore();
+    // 遍历整个棋盘
+    for (int i = 0; i < kBoardSizeNum; i++) {
+        for (int j = 0; j < kBoardSizeNum; j++) {
+            int s = g->scoreMapVec[i][j];// 获取当前位置评分
+
+            // 确定当前位置是否属于己方棋子
+            bool isMineStone = (g->playerFlag ? (g->gameMapVec[i][j] == 1)
+                                              : (g->gameMapVec[i][j] == -1));
+            bool isOppStone = (g->playerFlag ? (g->gameMapVec[i][j] == -1)
+                                             : (g->gameMapVec[i][j] == 1));
+
+            // 确定当前位置是否属于对手棋子
+            if ( isMineStone || (g->gameMapVec[i][j] == 0 && s > maxMine) )
+            {
+                maxMine = qMax(maxMine, s);
+            }
+            // 对手：同理
+            if ( isOppStone || (g->gameMapVec[i][j] == 0 && s > maxOpp) )
+            {
+                maxOpp = qMax(maxOpp, s);
+            }
+        }
+    }
+
+    myScoreLabel->setText(QString::number(maxMine/1.0,'f',1));
+    opponentScoreLabel->setText(QString::number(maxOpp/1.0,'f',1));
+
+
+    // **整体评估**
+    int evalScore = g->evaluateBoard();
+    QString evalStr;
+    if (std::abs(evalScore) > 20000) {
+        evalStr = evalScore > 0
+                      ? "黑方绝对优势"
+                      : "白方绝对优势";
+    } else if (std::abs(evalScore) > 5000) {
+        evalStr = evalScore > 0
+                      ? (g->gameType == BOT ? "劣势" : "黑方优势")
+                      : (g->gameType == BOT ? "优势" : "白方优势");
+    } else {
+        evalStr = "局势平衡";
+    }
+    evalLabel->setText(evalStr);
+
+    // 3) 可视化一下全盘分差
+    qDebug() << "全盘评估分:" << evalScore << " 评估:" << evalStr;
+}
