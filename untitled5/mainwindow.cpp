@@ -200,3 +200,180 @@ void MainWindow::loadGame()
         QMessageBox::warning(this, tr("Error"), tr("Load failed!"));// 失败提示
     }
 }
+
+// 悔棋操作
+void MainWindow::onUndo()
+{
+    // 检查是否可以悔棋
+    if (remainingUndos <= 0 || !boardWidget->gameModel().canUndo())
+        return;
+    if(gameType == BOT)// 人机模式需要撤销两步
+    {
+        if (boardWidget->gameModel().moveHistory.size() < 2)
+            return;
+        boardWidget->gameModel().undo(); // 撤销AI
+        boardWidget->gameModel().undo(); // 撤销玩家
+    }
+    else// 双人模式只需要撤销一步
+    {
+        if (boardWidget->gameModel().moveHistory.size() < 1)
+            return; // 需要添加检查
+        boardWidget->gameModel().undo(); // 仅撤销一步
+    }
+
+    remainingUndos--;// 减少剩余悔棋次数
+    updateUndoUI(); // 更新悔棋UI
+    boardWidget->reloadFromModel();// 刷新棋盘显示
+    updateStats();// 更新统计数据
+}
+
+// 设置最大悔棋次数
+void MainWindow::setMaxUndos() {
+    bool ok;
+
+    // 弹窗获取用户输入
+    int newMax = QInputDialog::getInt(this, "设置悔棋次数","请输入允许的悔棋次数:",
+                                      maxUndos,
+                                      0,// 最小值
+                                      10,// 最大值
+                                      1,// 步长
+                                      &ok);// 返回是否确认
+
+    if (ok) {
+        maxUndos = newMax;// 更新最大悔棋次数
+        remainingUndos = maxUndos;// 重置剩余悔棋次数
+        updateUndoUI();// 更新UI显示
+    }
+}
+
+// 更新悔棋UI状态
+void MainWindow::updateUndoUI()
+{
+    // 更新菜单文本显示剩余次数
+    QString text = tr("Undo (剩余次数: %1)").arg(remainingUndos);
+    undoAction->setText(text);
+
+    undosLabel->setText(QString::number(remainingUndos)); // 更新统计面板标签
+
+    // 设置悔棋按钮是否可用：
+    bool canUndo = (remainingUndos > 0) &&     // 还有剩余次数
+                   boardWidget->gameModel().canUndo() && // 可以悔棋
+                   isMyTurn;                   // 轮到玩家回合
+    undoAction->setEnabled(canUndo);
+}
+
+// 处理玩家移动
+void MainWindow::onPlayerMove(int row, int col)
+{
+    if(!isMyTurn)// 检查是否轮到玩家
+    {
+        QMessageBox::warning(this, "提示", "请等待对方落子");
+        return;
+    }
+
+    lastMoverWasHuman = true;// 标记此步为玩家移动
+
+    boardWidget->gameModel().actionByPerson(row, col);
+
+    checkGameEnd(row, col);// 检查游戏是否结束
+    updateStats();// 更新统计数据
+
+    // 人机模式下启动AI计时器
+    if (gameType == BOT && !boardWidget->gameModel().playerFlag)
+    {
+        QTimer::singleShot(kAIDelay, this, &MainWindow::onAIMove);// 延时后触发AI移动
+    }
+
+    updateUndoUI();
+}
+
+// 处理AI移动
+void MainWindow::onAIMove()
+{
+    lastMoverWasHuman = false;// 标记此步为AI移动
+    int r, c;                 // AI落子位置
+    boardWidget->gameModel().actionByAI(r, c);// AI决策并落子
+    checkGameEnd(r, c);// 检查游戏是否结束
+    updateStats();// 更新统计数据
+    updateUndoUI();// 更新悔棋UI
+}
+
+// 检查游戏是否结束（胜利/平局）
+void MainWindow::checkGameEnd(int row, int col)
+{
+    GameModel *g = &boardWidget->gameModel(); // 获取游戏模型
+
+    // 胜利判断
+    if (g->isWin(row, col)) {
+        bool winSideBlack = (g->gameMapVec[row][col] == -1);// 判断哪一方赢（黑棋为 -1，白棋为 +1）
+        bool localWin = (winSideBlack && myColor == "BLACK")
+                        || (!winSideBlack && myColor == "WHITE");// 判断是否是本机玩家胜利
+
+        // 更新本地胜负统计
+        if (localWin) wins++;
+        else          losses++;
+
+        // 记录历史到文件
+        QFile file("history.log");
+        if (file.open(QIODevice::Append | QIODevice::Text)) {
+            QTextStream out(&file);  // 声明 out 变量
+            bool winSideBlack = (g->gameMapVec[row][col] == -1);
+            QString winner = winSideBlack ? "黑棋赢了" : "白棋赢了";
+            out << "[" << QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm") << "] "<< winner << "\n";
+        }
+
+        // 更新最短胜利步数记录
+        int currentSteps = g->moveHistory.size();
+        if (currentSteps < shortestWin) {
+            shortestWin = currentSteps;
+        }
+
+        // 生成胜利消息
+        QString message;
+        if (winSideBlack)
+        {
+            message = localWin ? "赢了(黑棋)" : "赢了(黑棋)";
+        } else
+        {
+            message = localWin ? "赢了(白棋)" : "赢了(白棋)";
+        }
+        QMessageBox::information(this, "结束", message);// 显示胜利信息
+        updateStats();// 更新统计数据
+
+        isMyTurn = true;
+
+        // 1秒后重置游戏
+        boardWidget->setEnabled(false);// 禁用棋盘
+        QTimer::singleShot(1000, [this]()
+                           {
+                               boardWidget->setEnabled(true);// 启用棋盘
+                           });
+        g->startGame(g->gameType);// 重新开始游戏
+        boardWidget->reloadFromModel();// 刷新棋盘
+        g->calculateScore(); // 重新计算分数
+        updateStats();                // 更新统计
+        updateUndoUI();              // 更新悔棋UI
+    }
+    // 平局判断
+    else if (g->isDeadGame()) {
+        draws++;// 增加平局计数
+        QMessageBox::information(this, "结束", "平局"); // 显示平局信息
+        updateStats();// 更新统计数据
+
+        // 1秒后重置游戏（同上）
+        boardWidget->setEnabled(false);
+        QTimer::singleShot(1000, [this]()
+                           {
+                               boardWidget->setEnabled(true);
+                           });
+        g->startGame(g->gameType);
+        boardWidget->reloadFromModel();
+        g->calculateScore();
+        updateStats();
+    }
+
+    updateUndoUI();
+    qDebug() << "当前步数:" << g->moveHistory.size()
+             << " 最短步数记录:" << shortestWin;
+}
+
